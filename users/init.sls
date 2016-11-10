@@ -240,7 +240,7 @@ users_ssh_config_{{ name }}:
 
 users_sudoer-{{ name }}:
   file.managed:
-    - name: {{ users.sudoers_dir }}/{{ name }}
+    - name: {{ users.sudoers_dir }}/{{ name.replace(".", "") }}
     - user: root
     - group: {{ users.root_group }}
     - mode: '0440'
@@ -256,7 +256,7 @@ users_sudoer-{{ name }}:
       # Specify the rule via an env var to avoid shell quoting issues.
       - rule: "{{ name }} {{ rule }}"
     - require_in:
-      - file: users_{{ users.sudoers_dir }}/{{ name }}
+      - file: users_{{ users.sudoers_dir }}/{{ name.replace(".", "") }}
 {% endfor %}
 {% endif %}
 {% if 'sudo_defaults' in user %}
@@ -270,13 +270,13 @@ users_sudoer-{{ name }}:
       # Specify the rule via an env var to avoid shell quoting issues.
       - rule: "Defaults:{{ name }} {{ entry }}"
     - require_in:
-      - file: users_{{ users.sudoers_dir }}/{{ name }}
+      - file: users_{{ users.sudoers_dir }}/{{ name.replace(".", "") }}
 {% endfor %}
 {% endif %}
 
-users_{{ users.sudoers_dir }}/{{ name }}:
+users_{{ users.sudoers_dir }}/{{ name.replace(".", "") }}:
   file.managed:
-    - name: {{ users.sudoers_dir }}/{{ name }}
+    - name: {{ users.sudoers_dir }}/{{ name.replace(".", "") }}
     - contents: |
       {%- if 'sudo_defaults' in user %}
       {%- for entry in user['sudo_defaults'] %}
@@ -293,9 +293,9 @@ users_{{ users.sudoers_dir }}/{{ name }}:
       - file: users_sudoer-{{ name }}
 {% endif %}
 {% else %}
-users_{{ users.sudoers_dir }}/{{ name }}:
+users_{{ users.sudoers_dir }}/{{ name.replace(".", "") }}:
   file.absent:
-    - name: {{ users.sudoers_dir }}/{{ name }}
+    - name: {{ users.sudoers_dir }}/{{ name.replace(".", "") }}
 {% endif %}
 
 {%- if 'google_auth' in user %}
@@ -331,17 +331,17 @@ users_absent_user_{{ name }}:
   user.absent:
     - name: {{ name }}
 {% endif -%}
-users_{{ users.sudoers_dir }}/{{ name }}:
+users_{{ users.sudoers_dir }}/{{ name.replace(".", "") }}:
   file.absent:
-    - name: {{ users.sudoers_dir }}/{{ name }}
+    - name: {{ users.sudoers_dir }}/{{ name.replace(".", "") }}
 {% endfor %}
 
 {% for user in pillar.get('absent_users', []) %}
-users_absent_user_2_{{ user }}:
+users_absent_user_2_{{ user.replace(".", "") }}:
   user.absent
-users_2_{{ users.sudoers_dir }}/{{ user }}:
+users_2_{{ users.sudoers_dir }}/{{ user.replace(".", "") }}:
   file.absent:
-    - name: {{ users.sudoers_dir }}/{{ user }}
+    - name: {{ users.sudoers_dir }}/{{ user.replace(".", "") }}
 {% endfor %}
 
 {% for group in pillar.get('absent_groups', []) %}
